@@ -1,1 +1,16 @@
+## VS Code
 /.history
+.vscode/
+
+## .NET build outputs
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+*.DotSettings.user
+
+## NuGet
+*.nupkg
+project.lock.json

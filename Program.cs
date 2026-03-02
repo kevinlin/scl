@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.Parsing;
 
 namespace scl;
 
@@ -15,17 +14,20 @@ class Program
         RootCommand rootCommand = new("Sample app for System.CommandLine");
         rootCommand.Options.Add(fileOption);
 
-        ParseResult parseResult = rootCommand.Parse(args);
-        if (parseResult.Errors.Count == 0 && parseResult.GetValue(fileOption) is FileInfo parsedFile)
+        rootCommand.SetAction(parseResult =>
         {
+            FileInfo? parsedFile = parseResult.GetValue(fileOption);
+            if (parsedFile is null)
+            {
+                Console.Error.WriteLine("Error: --file option is required.");
+                return 1;
+            }
             ReadFile(parsedFile);
             return 0;
-        }
-        foreach (ParseError parseError in parseResult.Errors)
-        {
-            Console.Error.WriteLine(parseError.Message);
-        }
-        return 1;
+        });
+
+        ParseResult parseResult = rootCommand.Parse(args);
+        return parseResult.Invoke();
     }
 
     static void ReadFile(FileInfo file)
